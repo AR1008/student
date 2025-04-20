@@ -1,0 +1,123 @@
+<!-- File: src/main/resources/templates/student/mark-attendance.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="fragments/header :: header"></th:block>
+</head>
+<body>
+    <div th:replace="fragments/header :: navbar"></div>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>Self Check-in</h2>
+                <hr>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Attendance Check-in</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${param.success}" class="alert alert-success">
+                            Attendance marked successfully!
+                        </div>
+                        <div th:if="${param.error}" class="alert alert-danger" th:text="${param.error}">
+                            Error message
+                        </div>
+                        
+                        <form th:action="@{/student/mark-attendance}" method="post">
+                            <div class="mb-3">
+                                <label for="attendanceId" class="form-label">Select Active Session</label>
+                                <select class="form-select" id="attendanceId" name="attendanceId" required>
+                                    <option value="">Select Session</option>
+                                    <!-- In a real implementation, this would be populated with active sessions -->
+                                    <option value="1">Sample Session 1 - Introduction to Programming</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Biometric Verification</label>
+                                <div id="biometric-container" class="biometric-container">
+                                    <i class="bi bi-fingerprint"></i>
+                                    <h5>Click to Scan Fingerprint</h5>
+                                    <p id="biometric-status">Not Verified</p>
+                                    <input type="hidden" id="biometric-data" name="biometricData">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100" id="submit-btn" disabled>Mark Attendance</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header bg-light">
+                        <h5>Today's Schedule</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Introduction to Programming</h6>
+                                    <small>9:00 AM - 10:30 AM</small>
+                                </div>
+                                <p class="mb-1">Room: CS-101</p>
+                                <small class="text-success">Attended</small>
+                            </div>
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Database Management Systems</h6>
+                                    <small>11:00 AM - 12:30 PM</small>
+                                </div>
+                                <p class="mb-1">Room: CS-102</p>
+                                <small class="text-warning">Ongoing</small>
+                            </div>
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Data Structures and Algorithms</h6>
+                                    <small>2:00 PM - 3:30 PM</small>
+                                </div>
+                                <p class="mb-1">Room: CS-103</p>
+                                <small class="text-muted">Upcoming</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+    <script>
+        // Enable submit button after biometric verification
+        document.addEventListener('DOMContentLoaded', function() {
+            const biometricContainer = document.getElementById('biometric-container');
+            const biometricStatus = document.getElementById('biometric-status');
+            const biometricData = document.getElementById('biometric-data');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            biometricContainer.addEventListener('click', function() {
+                biometricStatus.textContent = 'Scanning...';
+                biometricStatus.className = 'text-warning';
+                
+                // Simulate biometric scanning delay
+                setTimeout(function() {
+                    // Generate a random biometric value for demo purposes
+                    const biometricValue = 'BIO-' + Math.random().toString(36).substring(2, 15);
+                    biometricData.value = biometricValue;
+                    
+                    biometricStatus.textContent = 'Verification Successful';
+                    biometricStatus.className = 'text-success';
+                    
+                    biometricContainer.classList.add('border-success');
+                    submitBtn.disabled = false;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

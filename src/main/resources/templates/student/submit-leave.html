@@ -1,0 +1,129 @@
+<!-- File: src/main/resources/templates/student/submit-leave.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="fragments/header :: header"></th:block>
+</head>
+<body>
+    <div th:replace="fragments/header :: navbar"></div>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2>Submit Leave Application</h2>
+                <hr>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Leave Application Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${param.success}" class="alert alert-success">
+                            Leave application submitted successfully!
+                        </div>
+                        <div th:if="${param.error}" class="alert alert-danger" th:text="${param.error}">
+                            Error message
+                        </div>
+                        
+                        <form th:action="@{/student/submit-leave}" method="post" id="leave-application-form">
+                            <div class="mb-3">
+                                <label for="courseId" class="form-label">Course (Optional)</label>
+                                <select class="form-select" id="courseId" name="courseId">
+                                    <option value="">All Courses</option>
+                                    <option th:each="course : ${courses}" 
+                                            th:value="${course.id}" 
+                                            th:text="${course.courseCode + ' - ' + course.courseName}">
+                                        Course
+                                    </option>
+                                </select>
+                                <small class="form-text text-muted">Leave it blank if this leave is for all courses</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="leaveType" class="form-label">Leave Type</label>
+                                <select class="form-select" id="leaveType" name="leaveType" required>
+                                    <option value="MEDICAL">Medical</option>
+                                    <option value="PERSONAL">Personal</option>
+                                    <option value="EVENT">Event Participation</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="fromDate" class="form-label">From Date</label>
+                                <input type="date" class="form-control" id="fromDate" name="fromDate" required
+                                       th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="toDate" class="form-label">To Date</label>
+                                <input type="date" class="form-control" id="toDate" name="toDate" required
+                                       th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="reason" class="form-label">Reason</label>
+                                <textarea class="form-control" id="reason" name="reason" rows="3" required minlength="10"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="documentPath" class="form-label">Support Document (Optional)</label>
+                                <input type="file" class="form-control" id="documentPath" name="documentPath">
+                                <small class="form-text text-muted">Upload supporting documents (e.g., medical certificate)</small>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5>My Leave Applications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${leaveApplications.empty}" class="text-center p-3">
+                            <p>No leave applications found.</p>
+                        </div>
+                        <div th:unless="${leaveApplications.empty}" class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>From Date</th>
+                                        <th>To Date</th>
+                                        <th>Course</th>
+                                        <th>Status</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="leave : ${leaveApplications}">
+                                        <td th:text="${leave.leaveType}">Type</td>
+                                        <td th:text="${#dates.format(leave.fromDate, 'dd-MM-yyyy')}">From</td>
+                                        <td th:text="${#dates.format(leave.toDate, 'dd-MM-yyyy')}">To</td>
+                                        <td th:text="${leave.course != null ? leave.course.courseCode : 'All Courses'}">Course</td>
+                                        <td>
+                                            <span th:if="${leave.status == 'PENDING'}" class="badge bg-warning">Pending</span>
+                                            <span th:if="${leave.status == 'APPROVED'}" class="badge bg-success">Approved</span>
+                                            <span th:if="${leave.status == 'REJECTED'}" class="badge bg-danger">Rejected</span>
+                                        </td>
+                                        <td th:text="${leave.comments != null ? leave.comments : '-'}">Comments</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
